@@ -1,19 +1,64 @@
 plugins {
     id 'java-library'
+    id 'io.qameta.allure' version '2.11.2'
 }
 
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    testImplementation (
-            "com.codeborne:selenide:6.19.1",
-            "org.junit.jupiter:junit-jupiter:5.9.3")
+def allureVersion = "2.23.0",
+    slf4jVersion = "2.0.9"
+
+compileJava {
+    options.encoding = 'UTF-8'
+}
+compileTestJava {
+    options.encoding = 'UTF-8'
 }
 
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
+allure {
+    report {
+        version.set(allureVersion)
+    }
+    adapter { // отвечает за появление папочки build/allure-results
+        aspectjWeaver.set(true) //обработка аннотации @Step
+        frameworks {
+            junit5 { //название фреймворка
+                adapterVersion.set(allureVersion) //версия интеграции фреймворка и Allure
+            }
+        }
+    }
+}
+
+dependencies {
+    testImplementation (
+            "com.codeborne:selenide:7.0.0",
+            "org.junit.jupiter:junit-jupiter:5.10.0",
+            "com.github.javafaker:javafaker:1.0.2",
+            "io.qameta.allure:allure-selenide:$allureVersion",
+            "org.slf4j:slf4j-simple:$slf4jVersion",
+            "com.codeborne:pdf-test:1.8.1",
+            "com.codeborne:selenide-proxy:6.17.0",
+            "com.codeborne:pdf-test:1.8.1",
+            "org.hamcrest:hamcrest-library:2.2",
+            "com.codeborne:selenide-selenoid:6.19.0",
+            "org.aeonbits.owner:owner:1.0.12"
+
+
+    )
+}
+
+tasks.withType(Test) {
+    systemProperties(System.getProperties())
+    useJUnitPlatform()
+
+    testLogging {
+        lifecycle {
+            events "started", "skipped", "failed", "standard_error", "standard_out"
+            exceptionFormat "short"
+        }
+    }
 }
 
 test {

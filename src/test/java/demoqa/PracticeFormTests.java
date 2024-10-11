@@ -1,6 +1,7 @@
 
 package demoqa;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -14,11 +15,11 @@ import static com.codeborne.selenide.Selenide.*;
 public class PracticeFormTests {
 
     @BeforeAll
-    static void beforeAll() {
+    static void configurationSettings() {
         Configuration.browserSize = "1920x1080";
         Configuration.baseUrl = "https://demoqa.com";
         Configuration.pageLoadStrategy = "eager";
-        Configuration.holdBrowserOpen = false;
+        Configuration.holdBrowserOpen = true;
     }
 
     @Test
@@ -42,8 +43,7 @@ public class PracticeFormTests {
         $(byText("Physics")).click();
         $(byText("Reading")).click();
         $(byText("Sports")).click();
-        File photo = new File("src/test/resources/photo.jpg");
-        $("#uploadPicture").uploadFile(photo);
+        $("#uploadPicture").uploadFromClasspath("photo.jpg");
         $("#currentAddress").setValue("Moscow");
         $("#state").click();
         $(byText("NCR")).click();
@@ -51,9 +51,17 @@ public class PracticeFormTests {
         $(byText("Delhi")).click();
         $("#submit").click();
 
-        $(".table-responsive").shouldHave(text("Alla Ivanova"), text("alla.ivanova@test.com"),
-                text("Female"), text("8900123122"), text("18 February,2000"), text("Physics"), text("Reading, Sports"),
-                text("photo.jpg"), text("Moscow"), text("NCR Delhi"));
+        $(".modal-header").shouldHave(Condition.text("Thanks for submitting the form"));
+        $(".modal-body").shouldHave(Condition.text("Alla Ivanova"));
+        $(".modal-body").shouldHave(Condition.text("alla.ivanova@test.com"));
+        $(".modal-body").shouldHave(Condition.text("Female"));
+        $(".modal-body").shouldHave(Condition.text("8900123122"));
+        $(".modal-body").shouldHave(Condition.text("18 February,2000"));
+        $(".modal-body").shouldHave(Condition.text("Physics"));
+        $(".modal-body").shouldHave(Condition.text("Reading, Sports"));
+        $(".modal-body").shouldHave(Condition.text("photo.jpg"));
+        $(".modal-body").shouldHave(Condition.text("Moscow"));
+        $(".modal-body").shouldHave(Condition.text("NCR Delhi"));
     }
 }
 
